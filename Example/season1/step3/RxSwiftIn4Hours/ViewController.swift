@@ -34,6 +34,68 @@ class ViewController: UIViewController {
         //          +--> button enable
         //          |
         // pw input +--> check valid --> bullet
+        
+        
+        
+        //
+        // Type 1
+        //
+        
+        
+        //input - 아이디, 비번 입력
+        let idInputOb: Observable<String> =  idField.rx.text.orEmpty.asObservable()
+        let idValid = idInputOb.map(checkEmailValid)
+        let pwInputOb: Observable<String> =  pwField.rx.text.orEmpty.asObservable()
+        let pwValid = pwInputOb.map(checkPasswordValid)
+    
+        
+        //output - 불린,로그인버튼 enable
+        
+        idValid.subscribe(onNext: { bool in self.idValidView.isHidden = bool })
+            .disposed(by: disposeBag)
+        
+        pwValid.subscribe(onNext: { bool in self.pwValidView.isHidden = bool })
+            .disposed(by: disposeBag)
+        
+        Observable.combineLatest(idValid, pwValid, resultSelector: {s1,s2 in s1 && s2})
+            .subscribe(onNext: { bool in self.loginButton.isEnabled = bool })
+            .disposed(by: disposeBag)
+        
+        
+        //
+        // Type 2
+        //
+        
+        
+        
+//        idField.rx.text.orEmpty//orEmpty???텍스트 있건 없건.. 옵셔널아니구 걍 string 내려옴
+//            //            .filter { $0 != nil }
+//            //            .map { $0! }
+//            .map(checkEmailValid)
+//            .subscribe(onNext: { (bool) in
+//                self.idValidView.isHidden = bool
+//            })
+//            .disposed(by: disposeBag)
+//
+//        //password
+//        pwField.rx.text.orEmpty//orEmpty???텍스트 있건 없건.. 옵셔널아니구 걍 string 내려옴
+//            //            .filter { $0 != nil }
+//            //            .map { $0! }
+//            .map(checkPasswordValid)
+//            .subscribe(onNext: { (bool) in
+//                self.pwValidView.isHidden = bool
+//            })
+//            .disposed(by: disposeBag)
+//
+//        Observable.combineLatest(
+//            idField.rx.text.orEmpty.map(checkEmailValid),
+//            pwField.rx.text.orEmpty.map(checkPasswordValid),
+//            resultSelector: { s1, s2 in s1 && s2 }
+//        )
+//        .subscribe(onNext: { (bool) in
+//            self.loginButton.isEnabled = bool
+//        })
+//        .disposed(by: disposeBag)
     }
 
     // MARK: - Logic
